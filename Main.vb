@@ -73,7 +73,7 @@ Module Main
                     End If
                 Next p
             Case Else
-                If Pid = -1 Or num = 0 Then
+                If Pid = -1 And num = 0 Then
                     Console.WriteLine("PIDもしくはTaskIDの指定がありません。")
                     Exit Select
                 End If
