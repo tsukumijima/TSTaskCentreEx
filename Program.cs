@@ -117,7 +117,7 @@ static class Program
                                     // なぜか PowerShell だと正しく入れ子のダブルクオートを渡せないため
                                    .Replace("'", "\"")
                                     // | を改行コードに変換
-                                   .Replace("|", "");
+                                   .Replace("|", "\r\n");
                 if (Verbose) Console.WriteLine("Option     (-o) : " + Option + "");
                 continue;
             }
