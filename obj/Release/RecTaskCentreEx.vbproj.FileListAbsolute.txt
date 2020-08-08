@@ -1,9 +1,0 @@
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\bin\Release\TSTaskCentreEx.exe.config
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\bin\Release\TSTaskCentreEx.exe
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\bin\Release\TSTaskCentreEx.pdb
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\bin\Release\TSTaskCentreEx.xml
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\obj\Release\TSTaskCentreEx.Resources.resources
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\obj\Release\TSTaskCentreEx.vbproj.GenerateResource.Cache
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\obj\Release\TSTaskCentreEx.exe
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\obj\Release\TSTaskCentreEx.xml
-C:\Users\5300\Documents\GitHub\TSTaskCentreEx\obj\Release\TSTaskCentreEx.pdb
