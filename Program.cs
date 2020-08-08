@@ -21,8 +21,12 @@ static class Program
         string Option = "";
         string ServerName = ".";
         bool Verbose = false;
+        bool Version = false;
 
         string[] ArgList = System.Environment.GetCommandLineArgs();
+        string VersionInfo =
+            System.Diagnostics.FileVersionInfo.GetVersionInfo(
+            System.Reflection.Assembly.GetExecutingAssembly().Location).ProductVersion;
 
         List<string> comList = new List<string>();
         if (ArgList == null || ArgList.Length <= 1)
@@ -34,6 +38,8 @@ static class Program
             Console.Write("ServerName (-n) : 接続する TSTask が稼働している PC のホスト名 \r\n");
             Console.Write("Command    (-c) : TSTask に送信するコマンド (list を指定で TSTask の ID を表示) \r\n");
             Console.Write("Option     (-o) : TSTask に送信するコマンドのオプションプロパティ (\\n で改行できる) \r\n");
+            Console.Write("Details    (-d) : 受け取ったコマンドの詳細を表示する\r\n");
+            Console.Write("Version    (-v) : バージョンを表示する\r\n");
             return;
         }
 
@@ -44,9 +50,15 @@ static class Program
             if (s1.IndexOf("-") == 0)
             {
                 i = i + 1;
-                if (s1 == "-v")
+                if (s1 == "-d")
                 {
                     Verbose = true;
+                    comList.Add(s1);
+                    i = i - 1;
+                }
+                else if (s1 == "-v")
+                {
+                    Version = true;
                     comList.Add(s1);
                     i = i - 1;
                 }
@@ -110,11 +122,21 @@ static class Program
                 if (Verbose) Console.Write("Option     (-o) : " + Option + "\r\n");
                 continue;
             }
-            if (comList[i].ToLower().IndexOf("-v") == 0)
+            if (comList[i].ToLower().IndexOf("-d") == 0)
             {
-                Console.Write("Verbose    (-v) : " + Verbose + "\r\n");
+                Console.Write("Details    (-d) : " + Verbose + "\r\n");
                 continue;
             }
+            if (comList[i].ToLower().IndexOf("-v") == 0)
+            {
+                if (Verbose) Console.Write("Version    (-v) : " + Version + "\r\n");
+                continue;
+            }
+        }
+
+        if (Version) {
+            Console.Write("TSTaskCentreEx version " + VersionInfo);
+            return;
         }
 
         switch (Command.ToLower())
