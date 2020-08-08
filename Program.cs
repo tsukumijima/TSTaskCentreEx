@@ -13,78 +13,106 @@ using Microsoft.VisualBasic;
 
 static class Program
 {
-    public static void Main(string[] args)
+    public static void Main()
     {
-        int Pid = -1;
+        int PID = -1;
         int TaskID = 0;
         string Command = "";
         string Option = "";
-        string Pcn = ".";
+        string ServerName = ".";
+        bool Verbose = false;
+
+        string[] ArgList = System.Environment.GetCommandLineArgs();
 
         List<string> comList = new List<string>();
-        if (args == null)
+        if (ArgList == null || ArgList.Length <= 1)
         {
-            Console.Write("引数がありません。\r\n");
-            return;
-        }
-        if (args.Length == 0)
-        {
-            Console.Write("引数がありません。\r\n");
+            Console.Write("Error: 引数がありません。 \r\n");
+            Console.Write("オプション： \r\n");
+            Console.Write("PID        (-p) : 接続する TSTask の PID (プロセス ID) \r\n");
+            Console.Write("TaskID     (-t) : 接続する TSTask の TaskID (タスク ID) \r\n");
+            Console.Write("ServerName (-n) : 接続する TSTask が稼働している PC のホスト名 \r\n");
+            Console.Write("Command    (-c) : TSTask に送信するコマンド (list を指定で TSTask の ID を表示) \r\n");
+            Console.Write("Option     (-o) : TSTask に送信するコマンドのオプションプロパティ (\\n で改行できる) \r\n");
             return;
         }
 
         int i = 0;
-        for (i = 0; i <= args.Length - 1; i++)
+        for (i = 0; i <= ArgList.Length - 1; i++)
         {
-            string s1 = args[i];
-            if (s1.IndexOf("/") == 0)
+            string s1 = ArgList[i];
+            if (s1.IndexOf("-") == 0)
             {
                 i = i + 1;
-                try
+                if (s1 == "-v")
                 {
-                    string s2 = args[i];
-                    if (s2.IndexOf("/") != 0)
-                        comList.Add(s1 + " " + s2);
-                    else
-                        i = i - 1;
+                    Verbose = true;
+                    comList.Add(s1);
+                    i = i - 1;
                 }
-                catch (Exception ex)
-                {
-                    break;
+                else {
+                    try
+                    {
+                        string s2 = ArgList[i];
+                        if (s2.IndexOf("-") != 0)
+                        {
+                            comList.Add(s1 + " " + s2);
+                        }
+                        else
+                        {
+                            i = i - 1;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // 握りつぶす
+                        break;
+                    }
                 }
             }
         }
 
         for (i = 0; i <= comList.Count - 1; i++)
         {
-            if (comList[i].ToLower().IndexOf("/p") == 0)
+            if (comList[i].ToLower().IndexOf("-p") == 0)
             {
-                Pid = Convert.ToInt32(comList[i].Replace("/p ", ""));
-                Console.Write("PID        (/p) : " + Convert.ToString(Pid) + "\r\n");
+                PID = Convert.ToInt32(comList[i].Replace("-p ", ""));
+                if (Verbose) Console.Write("PID        (-p) : " + Convert.ToString(PID) + "\r\n");
                 continue;
             }
-            if (comList[i].ToLower().IndexOf("/t") == 0)
+            if (comList[i].ToLower().IndexOf("-t") == 0)
             {
-                TaskID = Convert.ToInt32(comList[i].Replace("/t ", ""));
-                Console.Write("TaskID     (/t) : " + Convert.ToString(TaskID) + "\r\n");
+                TaskID = Convert.ToInt32(comList[i].Replace("-t ", ""));
+                if (Verbose) Console.Write("TaskID     (-t) : " + Convert.ToString(TaskID) + "\r\n");
                 continue;
             }
-            if (comList[i].ToLower().IndexOf("/c") == 0)
+            if (comList[i].ToLower().IndexOf("-n") == 0)
             {
-                Command = comList[i].Replace("/c ", "");
-                Console.Write("Command    (/c) : " + Command + "\r\n");
+                ServerName = comList[i].Replace("-n ", "");
+                if (Verbose) Console.Write("ServerName (-n) : " + ServerName + "\r\n");
                 continue;
             }
-            if (comList[i].ToLower().IndexOf("/o") == 0)
+            if (comList[i].ToLower().IndexOf("-c") == 0)
             {
-                Option = comList[i].Replace("/o ", "");
-                Console.Write("Option     (/o) : " + Option + "\r\n");
+                Command = comList[i].Replace("-c ", "");
+                if (Verbose) Console.Write("Command    (-c) : " + Command + "\r\n");
                 continue;
             }
-            if (comList[i].ToLower().IndexOf("/n") == 0)
+            if (comList[i].ToLower().IndexOf("-o") == 0)
             {
-                Pcn = comList[i].Replace("/n ", "");
-                Console.Write("ServerName (/n) : " + Pcn + "\r\n");
+                Option = comList[i].Replace("-o ", "")
+                                    // プロパティ内のダブルクォートをシングルクオートでも指定できるように
+                                    // なぜか PowerShell だと正しく入れ子のダブルクオートを渡せないため
+                                   .Replace("'", "\"")
+                                    // 改行コードを反映
+                                   .Replace("\\r\\n", "\r\n")
+                                   .Replace("\\n", "\r\n");
+                if (Verbose) Console.Write("Option     (-o) : " + Option + "\r\n");
+                continue;
+            }
+            if (comList[i].ToLower().IndexOf("-v") == 0)
+            {
+                Console.Write("Verbose    (-v) : " + Verbose + "\r\n");
                 continue;
             }
         }
@@ -98,7 +126,7 @@ static class Program
                     {
                         SharedMemory sm = new SharedMemory(Convert.ToUInt32(p.Id));
                         if (sm.TaskID > 0)
-                            Console.Write("ID:" + p.Id.ToString("d08") + " TaskID:" + sm.TaskID.ToString("d02") + "\r\n");
+                            Console.Write("PID: " + p.Id.ToString("d08") + " TaskID: " + sm.TaskID.ToString("d02") + "\r\n");
                     }
 
                     break;
@@ -106,20 +134,28 @@ static class Program
 
             default:
                 {
-                    if (Pid == -1 & TaskID == 0)
+                    if (PID == -1 & TaskID == 0)
                     {
-                        Console.WriteLine("PIDもしくはTaskIDの指定がありません。");
+                        Console.WriteLine("Error: PID もしくは TaskID が指定されていません。");
+                        Console.Write("PID        (-p) : 接続する TSTask の PID (プロセス ID) \r\n");
+                        Console.Write("TaskID     (-t) : 接続する TSTask の TaskID (タスク ID) \r\n");
+                        break;
+                    }
+                    if (Command == "")
+                    {
+                        Console.WriteLine("Error: コマンドが指定されていません。");
+                        Console.Write("Command    (-c) : TSTask に送信するコマンド (list を指定で TSTask の ID を表示) \r\n");
                         break;
                     }
                     if (TaskID == 0)
                     {
-                        SharedMemory sm = new SharedMemory(Convert.ToUInt32(Pid));
+                        SharedMemory sm = new SharedMemory(Convert.ToUInt32(PID));
                         TaskID = Convert.ToInt32(sm.TaskID);
                     }
                     if (TaskID > 0)
                     {
                         TSTaskCommandSender rtcs = new TSTaskCommandSender(TaskID);
-                        Console.Write(rtcs.Send(Command + "\r\n" + Option, Pcn));
+                        Console.Write(rtcs.Send(Command + "\r\n" + Option, ServerName));
                     }
 
                     break;

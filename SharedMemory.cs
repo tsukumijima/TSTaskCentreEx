@@ -33,6 +33,10 @@ public class SharedMemory
             }
             catch (Exception ex)
             {
+                if (i == SharedMemoryChkCount) // 何回もエラーが表示されるのを防ぐ
+                {
+                    System.Console.WriteLine("Error: " + ex.Message);
+                }
             }
         }
     }

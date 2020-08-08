@@ -47,6 +47,7 @@ public class TSTaskCommandSender
         }
         catch (Exception ex)
         {
+            System.Console.WriteLine("Error: " + ex.Message);
             return null;
         }
         return ret;
