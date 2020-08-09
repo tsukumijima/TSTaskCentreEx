@@ -9,7 +9,7 @@
 ## Option
 
 - PID        ( -p )
-  - 接続する TSTask の PID (プロセス ID)。
+  - 接続する TSTask の PID (プロセス ID)
   - PID と TaskID はどちらか必須です。
 - TaskID     ( -t )
   - 接続する TSTask の TaskID (タスク ID)
