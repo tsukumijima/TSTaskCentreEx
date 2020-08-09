@@ -1,7 +1,7 @@
 
 # TSTaskCentreEx
 
-[TSTask](https://github.com/DBCTRADO/TSTask) へコマンドメッセージを送信するコマンドラインツールです。
+[TSTask](https://github.com/DBCTRADO/TSTask) へメッセージコマンドを送信するコマンドラインツールです。
 
 [RecTaskCentreEx](https://github.com/nullpohoge/RecTaskCentreEx) を C# に変換した上で、TSTask 対応やオプションの追加など様々な改良を加えています。  
 もともとが簡易的なツールだったので作りが甘い箇所があると思いますが、大目に見てください…
@@ -9,7 +9,7 @@
 ## Option
 
 - PID        ( -p )
-  - 接続する TSTask の PID (プロセス ID)。
+  - 接続する TSTask の PID (プロセス ID)
   - PID と TaskID はどちらか必須です。
 - TaskID     ( -t )
   - 接続する TSTask の TaskID (タスク ID)
