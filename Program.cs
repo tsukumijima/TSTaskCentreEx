@@ -19,6 +19,7 @@ static class Program
         int TaskID = 0;
         string Command = "";
         string Option = "";
+        string TSTaskName = "TSTask.exe";
         string ServerName = ".";
         bool Verbose = false;
         bool Version = false;
@@ -35,6 +36,7 @@ static class Program
             Console.WriteLine("オプション： ");
             Console.WriteLine("PID        (-p) : 接続する TSTask の PID (プロセス ID) ");
             Console.WriteLine("TaskID     (-t) : 接続する TSTask の TaskID (タスク ID) ");
+            Console.WriteLine("TSTaskName (-m) : 接続する TSTask のファイル名 (初期値: TSTask.exe)");
             Console.WriteLine("ServerName (-n) : 接続する TSTask が稼働している PC のホスト名 ");
             Console.WriteLine("Command    (-c) : TSTask に送信するコマンド (list を指定で TSTask の ID を表示) ");
             Console.WriteLine("Option     (-o) : TSTask に送信するコマンドのオプションプロパティ (複数指定する場合は | で区切る) ");
@@ -98,6 +100,12 @@ static class Program
                 if (Verbose) Console.WriteLine("TaskID     (-t) : " + Convert.ToString(TaskID) + "");
                 continue;
             }
+            if (comList[i].ToLower().IndexOf("-m") == 0)
+            {
+                TSTaskName = comList[i].Replace("-m ", "");
+                if (Verbose) Console.WriteLine("TSTaskName (-m) : " + TSTaskName + "");
+                continue;
+            }
             if (comList[i].ToLower().IndexOf("-n") == 0)
             {
                 ServerName = comList[i].Replace("-n ", "");
@@ -142,12 +150,12 @@ static class Program
         {
             case "list":
                 {
-                    Process[] ps = Process.GetProcessesByName("tstask");
+                    Process[] ps = Process.GetProcessesByName(TSTaskName.Replace(".exe", ""));
                     foreach (var p in ps)
                     {
                         SharedMemory sm = new SharedMemory(Convert.ToUInt32(p.Id));
                         if (sm.TaskID > 0)
-                            Console.WriteLine("PID: " + p.Id.ToString("d08") + " TaskID: " + sm.TaskID.ToString("d02") + "");
+                            Console.WriteLine("PID:" + p.Id.ToString("d08") + " TaskID:" + sm.TaskID.ToString("d02") + "");
                     }
 
                     break;
