@@ -21,6 +21,7 @@ static class Program
         string Option = "";
         string TSTaskName = "TSTask.exe";
         string ServerName = ".";
+        bool RecTask = false;
         bool Verbose = false;
         bool Version = false;
 
@@ -37,9 +38,10 @@ static class Program
             Console.WriteLine("PID        (-p) : 接続する TSTask の PID (プロセス ID) ");
             Console.WriteLine("TaskID     (-t) : 接続する TSTask の TaskID (タスク ID) ");
             Console.WriteLine("TSTaskName (-m) : 接続する TSTask のファイル名 (初期値: TSTask.exe)");
-            Console.WriteLine("ServerName (-n) : 接続する TSTask が稼働している PC のホスト名 ");
+            Console.WriteLine("ServerName (-n) : 接続する TSTask が稼働している PC のホスト名 (初期値: ローカル PC)");
             Console.WriteLine("Command    (-c) : TSTask に送信するコマンド (list を指定で TSTask の ID を表示) ");
             Console.WriteLine("Option     (-o) : TSTask に送信するコマンドのオプションプロパティ (複数指定する場合は | で区切る) ");
+            Console.WriteLine("RecTask    (-r) : TSTask の代わりに RecTask に接続する");
             Console.WriteLine("Details    (-d) : 受け取ったコマンドの詳細を表示する");
             Console.WriteLine("Version    (-v) : バージョンを表示する");
             return;
@@ -52,7 +54,14 @@ static class Program
             if (s1.IndexOf("-") == 0)
             {
                 i = i + 1;
-                if (s1 == "-d")
+                if (s1 == "-r")
+                {
+                    RecTask = true;
+                    TSTaskName = "RecTask.exe";
+                    comList.Add(s1);
+                    i = i - 1;
+                }
+                else if (s1 == "-d")
                 {
                     Verbose = true;
                     comList.Add(s1);
@@ -118,6 +127,11 @@ static class Program
                 if (Verbose) Console.WriteLine("Command    (-c) : " + Command + "");
                 continue;
             }
+            if (comList[i].ToLower().IndexOf("-r") == 0)
+            {
+                if (Verbose) Console.WriteLine("RecTask    (-r) : " + RecTask + "");
+                continue;
+            }
             if (comList[i].ToLower().IndexOf("-o") == 0)
             {
                 Option = comList[i].Replace("-o ", "")
@@ -153,7 +167,7 @@ static class Program
                     Process[] ps = Process.GetProcessesByName(TSTaskName.Replace(".exe", ""));
                     foreach (var p in ps)
                     {
-                        SharedMemory sm = new SharedMemory(Convert.ToUInt32(p.Id));
+                        SharedMemory sm = new SharedMemory(Convert.ToUInt32(p.Id), RecTask);
                         if (sm.TaskID > 0)
                             Console.WriteLine("PID:" + p.Id.ToString("d08") + " TaskID:" + sm.TaskID.ToString("d02") + "");
                     }
@@ -178,12 +192,12 @@ static class Program
                     }
                     if (TaskID == 0)
                     {
-                        SharedMemory sm = new SharedMemory(Convert.ToUInt32(PID));
+                        SharedMemory sm = new SharedMemory(Convert.ToUInt32(PID), RecTask);
                         TaskID = Convert.ToInt32(sm.TaskID);
                     }
                     if (TaskID > 0)
                     {
-                        TSTaskCommandSender rtcs = new TSTaskCommandSender(TaskID);
+                        TSTaskCommandSender rtcs = new TSTaskCommandSender(TaskID, RecTask);
                         Console.WriteLine(rtcs.Send(Command + "\r\n" + Option, ServerName));
                     }
 

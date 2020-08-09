@@ -13,8 +13,10 @@ public class SharedMemory
     // tstaskは最大30だけど
     private const int SharedMemoryChkCount = 15;
 
-    public SharedMemory(uint ProcessID)
+    public SharedMemory(uint ProcessID, bool RecTask = false)
     {
+        if (RecTask) _SharedMemoryName = "RecTask_Server_SharedMemory_";
+
         int i;
         for (i = 1; i <= SharedMemoryChkCount; i++)
         {

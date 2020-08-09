@@ -8,10 +8,13 @@ public class TSTaskCommandSender
     private string _ServerPipeName;
     private string _TaskID;
 
-    public TSTaskCommandSender(int TaskID)
+    public TSTaskCommandSender(int TaskID, bool RecTask = false)
     {
         _TaskID = Convert.ToString(TaskID);
-        _ServerPipeName = "TSTask_Server_Pipe_" + _TaskID.ToString();
+        if (RecTask)
+            _ServerPipeName = "RecTask_Server_Pipe_" + _TaskID.ToString();
+        else
+            _ServerPipeName = "TSTask_Server_Pipe_" + _TaskID.ToString();
     }
 
     public string Send(string Command, string ServerName)
